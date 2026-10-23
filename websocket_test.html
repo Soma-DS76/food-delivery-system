@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Food Delivery WebSocket Test</title>
+  <style>body{font:16px system-ui;max-width:900px;margin:32px auto;padding:0 16px}input,select,button{padding:10px;margin:5px 0;width:100%;box-sizing:border-box}pre{background:#111;color:#eee;padding:14px;min-height:180px;white-space:pre-wrap;overflow-wrap:anywhere}.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}</style>
+</head>
+<body>
+  <h1>Food Delivery WebSocket Test</h1>
+  <p>Paste a valid access token. Use the same token issued by <code>/auth/login</code> (or your login endpoint).</p>
+  <label>API base URL (for example, http://127.0.0.1:8000)</label>
+  <input id="base" value="http://127.0.0.1:8000">
+  <label>Access token</label>
+  <input id="token" placeholder="JWT access token">
+  <div class="row">
+    <div><label>Channel</label><select id="channel"><option value="orders">Customer order tracking</option><option value="restaurant">Restaurant owner orders</option><option value="partner">Delivery partner offers</option></select></div>
+    <div><label>Order ID (customer tracking only)</label><input id="order" type="number" min="1" value="1"></div>
+  </div>
+  <button id="connect">Connect</button><button id="disconnect">Disconnect</button>
+  <h2>Messages</h2><pre id="log">Not connected.</pre>
+<script>
+let socket;
+const log = (message) => { document.getElementById('log').textContent += '\n' + message; };
+document.getElementById('connect').onclick = () => {
+  if (socket && socket.readyState === WebSocket.OPEN) socket.close();
+  const base = document.getElementById('base').value.trim().replace(/\/$/, '');
+  const token = document.getElementById('token').value.trim();
+  const channel = document.getElementById('channel').value;
+  if (!token) { log('Enter an access token first.'); return; }
+  const wsBase = base.replace(/^http/, 'ws');
+  let path = channel === 'orders' ? `/ws/orders/${document.getElementById('order').value}?token=${encodeURIComponent(token)}` : `/ws/${channel}?token=${encodeURIComponent(token)}`;
+  socket = new WebSocket(wsBase + path);
+  socket.onopen = () => log('Connected to ' + path);
+  socket.onmessage = event => log(event.data);
+  socket.onerror = () => log('WebSocket error. Check token, role, URL, and server logs.');
+  socket.onclose = event => log(`Disconnected (code ${event.code}).`);
+};
+document.getElementById('disconnect').onclick = () => { if (socket) socket.close(); };
+</script>
+</body>
+</html>
