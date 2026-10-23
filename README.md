@@ -2,6 +2,35 @@
 
 A FastAPI backend for a food delivery workflow using MySQL, SQLAlchemy 2, Alembic, JWT access tokens, delivery-partner assignment, order tracking, notifications, and admin reports.
 
+food-delivery-system/
+│
+├── README.md                 ← Create README here
+├── .gitignore
+├── requirements.txt
+├── alembic.ini
+├── .env                      ← Do not push to GitHub
+│
+├── alembic/
+│   ├── env.py
+│   ├── script.py.mako
+│   └── versions/
+│       └── <migration_files>.py
+│
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── config.py
+│   │
+│   ├── models/
+│   ├── schemas/
+│   ├── routers/
+│   ├── services/
+│   ├── utils/
+│   └── database/
+│
+└── tests/
+    └── <test_files>.py
+    
 ## Main application
 
 The authoritative application is `app/`. Start it from the project root:
